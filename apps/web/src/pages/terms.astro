@@ -1,0 +1,165 @@
+---
+import BrandHead from "../components/BrandHead.astro";
+import BrandLogo from "../components/BrandLogo.astro";
+import "../styles/global.css";
+
+const url = Astro.url;
+const title = "Terms of use — steekem";
+const description = "The rules for using steekem: what you can and cannot share, how to report abuse, and the limits of the service.";
+const canonical = `${url.origin}/terms`;
+const ogImage = `${url.origin}/og.png`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <BrandHead />
+  </head>
+  <body>
+    <div class="shell wide">
+      <BrandLogo href="/" />
+
+      <article class="prose">
+        <h1>Terms of use</h1>
+        <p><em>Last updated: 4 May 2026.</em></p>
+
+        <p>
+          Steekem is a small set of browser tools for sharing single-use
+          things between two devices. There are no accounts and the tool is
+          free to use. By using it you agree to the rules below.
+        </p>
+
+        <h2>What you can use it for</h2>
+        <p>
+          You can use steekem to share things you have the right to share,
+          with people you intend to share them with. Examples: a Wi-Fi
+          password for a guest, a one-time login handed to a colleague, a
+          credit card detail sent to a family member, a short text snippet
+          you don't want sitting in a chat history.
+        </p>
+
+        <h2>What you can't use it for</h2>
+        <ul>
+          <li>
+            Sharing illegal content. That includes child sexual abuse
+            material, content that infringes someone else's intellectual
+            property, terrorist content, and anything else that is unlawful
+            where you are or where your recipient is.
+          </li>
+          <li>
+            Sending malware, phishing payloads, or anything intended to harm
+            the recipient's device or accounts.
+          </li>
+          <li>
+            Sharing credentials, payment details, or personal data of someone
+            else without their knowledge or authority.
+          </li>
+          <li>
+            Harassing, threatening, or intimidating other people.
+          </li>
+          <li>
+            Attempting to circumvent or disrupt the service itself —
+            automated abuse, denial-of-service attempts, or probing for
+            vulnerabilities outside of a responsible-disclosure conversation.
+          </li>
+        </ul>
+        <p>
+          If something is illegal offline, it's not OK on steekem either.
+        </p>
+
+        <h2>How transfers work, in plain terms</h2>
+        <p>
+          Steekem connects two browsers directly using WebRTC. The data flows
+          between the two devices — it does not pass through a server we
+          operate. We have no technical ability to read or recover what you
+          send. The connection only exists for as long as the two browsers
+          are open.
+        </p>
+        <p>
+          Because of this, we cannot retrieve, restore, recover, or moderate
+          the content of any specific transfer after the fact.
+        </p>
+
+        <h2>Reporting abuse</h2>
+        <p>
+          If you believe someone is using steekem to share illegal or harmful
+          content, please email <strong>abuse@steekem.com</strong> with the
+          room code (the 6-character part of the
+          <code>/r#code</code> link) and a short description of the problem.
+          I aim to respond within 5 working days.
+        </p>
+        <p>
+          What I can do in practice is limited by how the service works: most
+          often, I can terminate a room while it's still open, and where
+          appropriate restrict access from the source. I cannot decrypt or
+          retrieve the content of past transfers — that information no longer
+          exists.
+        </p>
+        <p>
+          For Dutch authorities, including the Dutch single point of contact
+          under the EU Digital Services Act, please use the same address. I
+          will respond promptly and cooperate within the limits of what's
+          technically possible.
+        </p>
+        <p>
+          For anything that isn't an abuse report — general questions,
+          feedback, press — please use
+          <a href="mailto:contact@steekem.com">contact@steekem.com</a>
+          instead, so the abuse mailbox stays focused.
+        </p>
+
+        <h2>No warranty</h2>
+        <p>
+          Steekem is provided "as is". I do my best to keep it working, but
+          transfers may fail and the service may be temporarily unavailable.
+          Don't use it for anything where a failed delivery, an
+          intercepted-by-the-recipient delivery, or an unavailable service
+          would cause real harm.
+        </p>
+        <p>
+          To the extent permitted by Dutch law, I'm not liable for indirect
+          or consequential losses arising from your use of the service.
+        </p>
+
+        <h2>Termination</h2>
+        <p>
+          I may block access, refuse service, or terminate sessions at any
+          time — particularly in response to abuse reports or to protect the
+          service.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          These terms may change. The "last updated" date at the top of this
+          page reflects the most recent change. Continued use of steekem
+          after a change means you accept the new terms.
+        </p>
+
+        <h2>Governing law</h2>
+        <p>
+          These terms are governed by the laws of the Netherlands. Any
+          disputes arising from them will be submitted to the competent
+          Dutch courts.
+        </p>
+      </article>
+
+      <p class="footnote">
+        <a href="/about">About</a> · <a href="/how-it-works">How it works</a> · <a href="/terms">Terms</a>
+      </p>
+    </div>
+  </body>
+</html>

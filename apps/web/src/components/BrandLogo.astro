@@ -1,0 +1,31 @@
+---
+// Shared brand wordmark display + theme toggle button.
+// Renders both wordmark SVG variants; CSS shows whichever matches the
+// active theme (manual override beats prefers-color-scheme).
+import ThemeToggle from "./ThemeToggle.astro";
+interface Props {
+  href?: string;
+  tagline?: string | null;
+  height?: number;
+}
+const {
+  href,
+  tagline = "single-use, end-to-end encrypted",
+  height = 28,
+} = Astro.props;
+---
+<ThemeToggle />
+<div class="brand">
+  {href ? (
+    <a href={href} class="name" aria-label="steekem — home">
+      <img src="/brand/wordmark-light.svg" alt="steekem" height={height} class="wordmark-img wordmark-light" />
+      <img src="/brand/wordmark-dark.svg" alt="steekem" height={height} class="wordmark-img wordmark-dark" />
+    </a>
+  ) : (
+    <span class="name">
+      <img src="/brand/wordmark-light.svg" alt="steekem" height={height} class="wordmark-img wordmark-light" />
+      <img src="/brand/wordmark-dark.svg" alt="steekem" height={height} class="wordmark-img wordmark-dark" />
+    </span>
+  )}
+  {tagline && <div class="tagline">{tagline}</div>}
+</div>

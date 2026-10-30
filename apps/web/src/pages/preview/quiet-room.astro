@@ -1,0 +1,443 @@
+---
+import FakeQr from "../../components/FakeQr.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>steekem — Preview: Quiet Room (playground)</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      /* ── theme tokens ──────────────────────────────────────── */
+      :root {
+        --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+
+      /* default = follow OS via media query */
+      :root {
+        --bg: #fafaf7;
+        --surface: #ffffff;
+        --border: #e5e5e5;
+        --border-soft: #efefef;
+        --text: #161412;
+        --text-muted: #595959;
+        --text-faint: #8a8a8a;
+        --halo-1: rgba(124, 156, 255, 0.10);
+        --halo-2: rgba(124, 156, 255, 0.04);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0d10;
+          --surface: #15181d;
+          --border: #23272e;
+          --border-soft: #1a1d22;
+          --text: #e7eaee;
+          --text-muted: #9097a3;
+          --text-faint: #5f6675;
+          --halo-1: rgba(124, 156, 255, 0.10);
+          --halo-2: rgba(124, 156, 255, 0.05);
+        }
+      }
+      /* explicit overrides via toolbar */
+      html[data-theme="light"] {
+        --bg: #fafaf7;
+        --surface: #ffffff;
+        --border: #e5e5e5;
+        --border-soft: #efefef;
+        --text: #161412;
+        --text-muted: #595959;
+        --text-faint: #8a8a8a;
+      }
+      html[data-theme="dark"] {
+        --bg: #0b0d10;
+        --surface: #15181d;
+        --border: #23272e;
+        --border-soft: #1a1d22;
+        --text: #e7eaee;
+        --text-muted: #9097a3;
+        --text-faint: #5f6675;
+      }
+
+      /* ── accent (4 options) ────────────────────────────────── */
+      /* `--accent-on` is the legible foreground color when laid on top of
+         the accent (used by primary buttons). For color accents we always
+         use white; for mono it follows the bg so dark text on dark bg etc.
+         doesn't happen. */
+      :root {
+        --accent-on: #ffffff;
+      }
+      html[data-accent="mono"] { --accent-on: var(--bg); }
+
+      /* default: periwinkle, both modes */
+      :root {
+        --accent: #5e6ad2;
+        --accent-glow: rgba(94, 106, 210, 0.25);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --accent: #7c9cff;
+          --accent-glow: rgba(124, 156, 255, 0.5);
+        }
+      }
+      html[data-accent="periwinkle"][data-theme="light"],
+      html[data-accent="periwinkle"]:not([data-theme]) { --accent: #5e6ad2; --accent-glow: rgba(94, 106, 210, 0.25); }
+      html[data-accent="periwinkle"][data-theme="dark"] { --accent: #7c9cff; --accent-glow: rgba(124, 156, 255, 0.5); }
+
+      html[data-accent="indigo"][data-theme="light"] { --accent: #4f46e5; --accent-glow: rgba(79, 70, 229, 0.3); }
+      html[data-accent="indigo"][data-theme="dark"] { --accent: #a78bfa; --accent-glow: rgba(167, 139, 250, 0.5); }
+      @media (prefers-color-scheme: light) {
+        html[data-accent="indigo"]:not([data-theme]) { --accent: #4f46e5; --accent-glow: rgba(79, 70, 229, 0.3); }
+      }
+      @media (prefers-color-scheme: dark) {
+        html[data-accent="indigo"]:not([data-theme]) { --accent: #a78bfa; --accent-glow: rgba(167, 139, 250, 0.5); }
+      }
+
+      html[data-accent="sage"][data-theme="light"] { --accent: #047857; --accent-glow: rgba(4, 120, 87, 0.25); }
+      html[data-accent="sage"][data-theme="dark"] { --accent: #34d399; --accent-glow: rgba(52, 211, 153, 0.4); }
+      @media (prefers-color-scheme: light) {
+        html[data-accent="sage"]:not([data-theme]) { --accent: #047857; --accent-glow: rgba(4, 120, 87, 0.25); }
+      }
+      @media (prefers-color-scheme: dark) {
+        html[data-accent="sage"]:not([data-theme]) { --accent: #34d399; --accent-glow: rgba(52, 211, 153, 0.4); }
+      }
+
+      /* mono = no color, accent equals text */
+      html[data-accent="mono"] { --accent: var(--text); --accent-glow: transparent; }
+
+      /* ── base ──────────────────────────────────────────────── */
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse 60% 50% at 50% 22%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
+          radial-gradient(ellipse 70% 50% at 50% 80%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 200ms;
+      }
+      html[data-accent="mono"] body::before { display: none; }
+
+      /* ── toolbar ───────────────────────────────────────────── */
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .toolbar-inner {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 12px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        font-size: 0.8rem;
+      }
+      .toolbar .group {
+        display: inline-flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .toolbar .label {
+        color: var(--text-faint);
+        margin-right: 6px;
+      }
+      .toolbar a.back {
+        color: var(--text-muted);
+        text-decoration: none;
+      }
+      .toolbar a.back:hover { color: var(--text); }
+      .toolbar button {
+        font: inherit;
+        font-size: 0.78rem;
+        padding: 5px 10px;
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 100ms;
+      }
+      .toolbar button:hover { color: var(--text); }
+      .toolbar button[data-active="true"] {
+        background: var(--accent);
+        color: var(--surface);
+        border-color: var(--accent);
+      }
+      html[data-accent="mono"] .toolbar button[data-active="true"] {
+        background: var(--text);
+        color: var(--bg);
+      }
+
+      /* ── content ───────────────────────────────────────────── */
+      .shell {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 56px 20px 64px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand { text-align: center; margin-bottom: 24px; }
+      .brand .name { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.02em; }
+      .brand .tagline { font-size: 0.85rem; color: var(--text-faint); margin-top: 2px; }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+      }
+      .status .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent-glow);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      .status-wrap { text-align: center; }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.02) inset,
+          0 24px 48px -12px rgba(0, 0, 0, 0.15);
+      }
+      html[data-theme="light"] .card,
+      html:not([data-theme]) .card {
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.02),
+          0 8px 24px -8px rgba(0, 0, 0, 0.06);
+      }
+      @media (prefers-color-scheme: dark) {
+        html:not([data-theme]) .card {
+          box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.02) inset,
+            0 24px 48px -12px rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      .file-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border-soft);
+        border-radius: 10px;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+      }
+      .file-line .icon {
+        width: 16px;
+        height: 16px;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+      .file-line .name {
+        flex: 1;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .file-line .size {
+        color: var(--text-faint);
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+
+      .qr-block { display: flex; justify-content: center; margin-bottom: 24px; }
+      .qr {
+        width: 168px;
+        height: 168px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 14px;
+        color: #000;
+      }
+
+      .label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-faint);
+        margin-bottom: 8px;
+      }
+
+      .code-section { text-align: center; margin-bottom: 24px; }
+      .code {
+        font-family: var(--mono);
+        font-size: 1.75rem;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+      }
+
+      .url-row { display: flex; gap: 8px; align-items: stretch; }
+      .url-input {
+        flex: 1;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        background: var(--bg);
+        color: var(--text-muted);
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        padding: 9px 12px;
+      }
+      .copy-btn {
+        font: inherit;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: var(--accent);
+        color: var(--accent-on);
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        padding: 0 18px;
+        cursor: pointer;
+        transition: opacity 120ms;
+      }
+      .copy-btn:hover { opacity: 0.88; }
+
+      .footnote {
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <div class="toolbar-inner">
+        <a href="/preview" class="back">← all previews</a>
+        <span style="color: var(--text-faint);">·</span>
+        <span class="label">theme</span>
+        <div class="group" data-control="theme">
+          <button data-value="auto" data-active="true">auto</button>
+          <button data-value="light">light</button>
+          <button data-value="dark">dark</button>
+        </div>
+        <span style="color: var(--text-faint);">·</span>
+        <span class="label">accent</span>
+        <div class="group" data-control="accent">
+          <button data-value="periwinkle" data-active="true">periwinkle</button>
+          <button data-value="indigo">indigo</button>
+          <button data-value="sage">sage</button>
+          <button data-value="mono">mono</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="shell">
+      <div class="brand">
+        <div class="name">steekem</div>
+        <div class="tagline">transfer in silence</div>
+      </div>
+
+      <div class="status-wrap">
+        <span class="status">
+          <span class="dot"></span>
+          waiting for the receiver
+        </span>
+      </div>
+
+      <div class="card">
+        <div class="file-line">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+          </svg>
+          <span class="name">vakantiefotos-2026.zip</span>
+          <span class="size">847.3 MB</span>
+        </div>
+
+        <div class="qr-block">
+          <div class="qr">
+            <FakeQr fg="#0b0d10" bg="#ffffff" />
+          </div>
+        </div>
+
+        <div class="code-section">
+          <div class="label">code</div>
+          <div class="code">k4mn7r</div>
+        </div>
+
+        <div>
+          <div class="label">link</div>
+          <div class="url-row">
+            <input type="text" class="url-input" value="steekem-web.pages.dev/send#k4mn7r" readonly />
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="footnote">
+        End-to-end encrypted. Your file never touches a server.
+      </p>
+    </div>
+
+    <script is:inline>
+      const html = document.documentElement;
+      function activate(group, value) {
+        const buttons = document.querySelectorAll(`[data-control="${group}"] button`);
+        buttons.forEach((b) => b.dataset.active = b.dataset.value === value ? "true" : "false");
+        if (group === "theme") {
+          if (value === "auto") html.removeAttribute("data-theme");
+          else html.setAttribute("data-theme", value);
+        }
+        if (group === "accent") html.setAttribute("data-accent", value);
+        try { localStorage.setItem(`steekem-pv-${group}`, value); } catch {}
+      }
+      document.querySelectorAll("[data-control] button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const group = btn.parentElement.dataset.control;
+          activate(group, btn.dataset.value);
+        });
+      });
+      // restore preferences
+      try {
+        const t = localStorage.getItem("steekem-pv-theme");
+        if (t) activate("theme", t);
+        const a = localStorage.getItem("steekem-pv-accent") ?? "periwinkle";
+        activate("accent", a);
+      } catch {
+        activate("accent", "periwinkle");
+      }
+    </script>
+  </body>
+</html>

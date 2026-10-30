@@ -1,0 +1,21 @@
+---
+type Mode = "text" | "wifi" | "password" | "card";
+interface Props { current: Mode; }
+const { current } = Astro.props;
+
+const tabs: Array<{ mode: Mode; label: string; href: string }> = [
+  { mode: "text", label: "Text", href: "/text" },
+  { mode: "wifi", label: "Wi-Fi", href: "/wifi" },
+  { mode: "password", label: "Login", href: "/password" },
+  { mode: "card", label: "Card", href: "/card" },
+];
+---
+<nav class="mode-toggle" aria-label="Send type">
+  {tabs.map((t) => (
+    <a
+      href={t.href}
+      class={t.mode === current ? "active" : ""}
+      aria-current={t.mode === current ? "page" : undefined}
+    >{t.label}</a>
+  ))}
+</nav>

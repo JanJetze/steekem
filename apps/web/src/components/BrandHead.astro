@@ -1,0 +1,23 @@
+---
+// Shared head bits for all pages: favicons and the Inter preload.
+// Two variants: cream-bg for light mode, dark-bg for dark mode.
+// Browsers without media-query support fall back to the default (light).
+---
+<link rel="preload" href="/fonts/Inter.var.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" type="image/svg+xml" href="/brand/favicon-light.svg" />
+<link rel="icon" type="image/svg+xml" href="/brand/favicon-light.svg" media="(prefers-color-scheme: light)" />
+<link rel="icon" type="image/svg+xml" href="/brand/favicon-dark.svg" media="(prefers-color-scheme: dark)" />
+<script is:inline>
+  // Apply stored theme override before paint so there's no flash of the
+  // wrong palette. Mirrors the cycle in ThemeToggle: a localStorage 'theme'
+  // value of 'light' or 'dark' wins over prefers-color-scheme; anything
+  // else (or no value) lets the OS preference apply.
+  (function() {
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') {
+        document.documentElement.setAttribute('data-theme', t);
+      }
+    } catch (e) {}
+  })();
+</script>

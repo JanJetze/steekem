@@ -1,0 +1,109 @@
+---
+import BrandHead from "../components/BrandHead.astro";
+import BrandLogo from "../components/BrandLogo.astro";
+import "../styles/global.css";
+
+const url = Astro.url;
+const title = "About — steekem";
+const description = "Steekem is a small set of browser tools for sharing single-use snippets between two devices peer-to-peer. End-to-end encrypted, never on a server.";
+const canonical = `${url.origin}/about`;
+const ogImage = `${url.origin}/og.png`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <BrandHead />
+  </head>
+  <body>
+    <div class="shell wide">
+      <BrandLogo href="/" />
+
+      <article class="prose">
+        <h1>About steekem</h1>
+        <p>
+          Steekem is a small set of browser tools for sending things between
+          two devices: a Wi-Fi password, a credit card for the family,
+          a one-time note.
+        </p>
+        <p>
+          It works peer-to-peer. The two browsers find each other through a
+          6-character code, then talk directly. Nothing you share sits on a
+          server we control. We never receive it.
+        </p>
+        <ul class="pillrow">
+          <li>Free</li>
+          <li>No accounts</li>
+          <li>End-to-end encrypted</li>
+        </ul>
+
+        <h2>Who is this for?</h2>
+        <p>
+          Steekem is for everyday sharing between people who already trust
+          each other. A parent texting their adult kid the new Wi-Fi
+          password. An IT person handing a one-time login to a colleague.
+          A friend sending a card detail for a shared dinner reservation.
+          The kind of thing that today ends up in a WhatsApp screenshot or,
+          worse, in plain email.
+        </p>
+        <p>
+          It doesn't authenticate either side: if you're sending something
+          sensitive, you should already know who you're sending it to.
+        </p>
+
+        <h2>About the name</h2>
+        <p>
+          Steekem comes from the Dutch <em>stiekem</em> — sneaky in the
+          harmless, schoolyard sense. Like passing a note across the classroom
+          when the teacher wasn't looking. The person it was meant for read
+          it, and then it was gone.
+        </p>
+
+        <h2>How is this funded?</h2>
+        <p>
+          It isn't. Steekem is a side project I run. There are no ads,
+          no trackers, and no analytics on what you share.
+        </p>
+
+        <h2>Who's behind it?</h2>
+        <p>
+          I'm Jan Jetze Beitler, an independent developer in the Netherlands.
+          I run a couple of browser-based tools.
+          <a href="https://toolsnug.com" rel="noopener">Toolsnug</a> is the
+          calculator and converter side, same privacy stance, different shape.
+          Steekem is the version for "I want to send something to my other
+          device, or to a friend, without uploading it anywhere."
+        </p>
+        <p>
+          I build with AI assistance. Claude Code does most of the typing. The
+          decisions about what to build, what to leave out, and how the pages
+          sound are mine. If something feels off, that's on me.
+        </p>
+        <p>
+          You can reach me at
+          <a href="mailto:contact@steekem.com">contact@steekem.com</a> for
+          questions or feedback. For abuse reports, see the
+          <a href="/terms">terms page</a>.
+        </p>
+      </article>
+
+      <p class="footnote">
+        <a href="/about">About</a> · <a href="/how-it-works">How it works</a> · <a href="/terms">Terms</a>
+      </p>
+    </div>
+  </body>
+</html>

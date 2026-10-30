@@ -1,0 +1,62 @@
+name: Deploy dev
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - '.prettierrc.mjs'
+      - '.prettierignore'
+      - 'assets/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy (dev)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @steekem/web typecheck
+
+      - name: Build web (dev)
+        env:
+          PUBLIC_SIGNALING_URL: wss://steekem-signaling-dev.janjetze.workers.dev
+        run: pnpm --filter @steekem/web build
+
+      - name: Deploy signaling worker (dev)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/signaling
+          command: deploy --env dev
+
+      - name: Deploy Pages (dev)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/dist --project-name=steekem-web-dev --branch=master

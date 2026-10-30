@@ -1,0 +1,8 @@
+---
+// File sharing is currently unavailable. Redirect any incoming visit
+// (old links, bookmarks, search results) to the home page rather than
+// rendering a half-disabled UI. The send flow code in SendApp still
+// supports `mode="files"` — restore the homepage tile and ModeToggle
+// entry, then remove this redirect, to bring the feature back.
+return Astro.redirect("/", 302);
+---

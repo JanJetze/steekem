@@ -1,0 +1,381 @@
+---
+import BrandHead from "../components/BrandHead.astro";
+import BrandLogo from "../components/BrandLogo.astro";
+import "../styles/global.css";
+
+const url = Astro.url;
+const title = "How steekem works — peer-to-peer browser sharing";
+const description = "How steekem sends text, Wi-Fi, passwords, and credit cards directly browser-to-browser over WebRTC, encrypted end-to-end with a key that lives in the link, and no server holding your bytes.";
+const canonical = `${url.origin}/how-it-works`;
+const ogImage = `${url.origin}/og.png`;
+const buildCommit = __BUILD_COMMIT__;
+const buildShort = buildCommit === "unknown" ? "unknown" : buildCommit.slice(0, 7);
+const buildCommitUrl = buildCommit === "unknown" ? null : `https://github.com/JanJetze/steekem/commit/${buildCommit}`;
+const buildRunUrl = __BUILD_RUN_URL__;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <BrandHead />
+  </head>
+  <body>
+    <div class="shell wide">
+      <BrandLogo href="/" />
+
+      <article class="prose">
+        <h1>How steekem works</h1>
+
+        <p>
+          You open one of the tools — <a href="/text">text</a>,
+          <a href="/wifi">Wi-Fi</a>, <a href="/password">password</a>, or
+          <a href="/card">credit card</a> — and pick what to share. Steekem
+          hands you a 6-character code and a link. The other person opens that
+          link, and your two browsers find each other through a tiny signaling
+          worker — the only server steekem runs. From there the browsers
+          negotiate a direct WebRTC connection and the bytes flow straight
+          between them, encrypted by the same DTLS layer your browser uses for
+          video calls. There is no upload. Nothing you share ever lands on a
+          server we control.
+        </p>
+
+        <h2>Why peer-to-peer</h2>
+        <p>
+          Most "send a file" or "share a password" tools work by asking you to
+          upload to a server, then issuing a link other people can use to
+          download. The server holds your data — for minutes, hours, sometimes
+          longer. That server can be subpoenaed, breached, or operated by
+          someone whose privacy promises don't survive a change of CEO. Even
+          when the file is encrypted at rest, the operator usually holds the
+          key.
+        </p>
+        <p>
+          Peer-to-peer skips that step. The two browsers exchange a handful of
+          small messages, just enough to find each other through routers and
+          firewalls, then connect directly. Bytes flow from one device to the
+          other. We don't have a copy. The room code and a few packets of
+          routing metadata are everything we ever see, and only for the seconds
+          the connection is being set up.
+        </p>
+
+        <h2>What happens when you share something</h2>
+        <p>The full flow looks like this:</p>
+        <ol>
+          <li>
+            <strong>You pick something to share.</strong> Each tool has its own
+            page tuned to the type of thing — a text snippet, Wi-Fi
+            credentials, a login, a credit card.
+          </li>
+          <li>
+            <strong>Steekem generates a room code.</strong> Six characters from
+            a non-confusable alphabet
+            (<code>abcdefghjkmnpqrstuvwxyz23456789</code> — no
+            <code>i</code>/<code>l</code>/<code>o</code>/<code>0</code>/<code>1</code>).
+            About 887 million combinations. The code is generated entirely in
+            your browser using <code>crypto.getRandomValues</code>; we never see
+            it server-side until your browser opens a WebSocket to that room.
+          </li>
+          <li>
+            <strong>You share the link.</strong> The link is
+            <code>/r#abc123</code> — the room code lives in the URL fragment,
+            which browsers do <em>not</em> send to servers. Even our signaling
+            worker, which receives the WebSocket connection on
+            <code>/room/abc123</code>, only sees the path, not anything you'd
+            consider sensitive.
+          </li>
+          <li>
+            <strong>The other person opens the link and taps Receive.</strong>
+            Opening the page alone does nothing — link previews and URL
+            scanners load it too. Only the tap connects their browser to the
+            same room on the signaling worker. The worker's job
+            at this point is exactly: "tell each of you that the other has
+            arrived."
+          </li>
+          <li>
+            <strong>The browsers negotiate.</strong> This is the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API" rel="noopener">WebRTC</a>
+            part. They exchange Session Description Protocol (SDP) offers and
+            ICE candidates — essentially "here's a list of network addresses I
+            can be reached at; pick one" — and run a DTLS handshake to set up
+            encryption keys.
+          </li>
+          <li>
+            <strong>They open a DataChannel.</strong> WebRTC's equivalent of a
+            TCP connection, but encrypted end-to-end and tunneled through
+            whatever NAT/firewall traversal trick worked. Once it's open, the
+            two browsers can send arbitrary bytes to each other directly.
+          </li>
+          <li>
+            <strong>The transfer happens.</strong> What this looks like depends
+            on the tool — see below.
+          </li>
+          <li>
+            <strong>It ends.</strong> The channel closes. The signaling worker
+            drops the room. Nothing persists.
+          </li>
+        </ol>
+
+        <h2>The signaling layer</h2>
+        <p>
+          The only server steekem runs is a small
+          <a href="https://developers.cloudflare.com/workers/" rel="noopener">Cloudflare Worker</a>
+          paired with a
+          <a href="https://developers.cloudflare.com/durable-objects/" rel="noopener">Durable Object</a>
+          per active room. A Durable Object is a tiny isolated process
+          Cloudflare runs at a single point — one per room ID. Two browsers
+          using the same room land in the same instance.
+        </p>
+        <p>What it does:</p>
+        <ul>
+          <li>Accepts WebSocket connections at <code>/room/&lt;code&gt;</code>.</li>
+          <li>
+            Pairs the first two browsers that connect with the same code,
+            tagging one as the sender and the other as the receiver.
+          </li>
+          <li>
+            Relays the small handshake messages they need to find each other on
+            the network — SDP descriptions, ICE candidates. These are about
+            routing, not content.
+          </li>
+        </ul>
+        <p>What it doesn't do:</p>
+        <ul>
+          <li>Touch your bytes. The data bypasses it entirely.</li>
+          <li>Authenticate anything. There aren't accounts to authenticate against.</li>
+          <li>
+            Log connections. Room state lives in memory, and the room dies as
+            soon as both clients leave.
+          </li>
+        </ul>
+
+        <h2>Single-use snippets: text, Wi-Fi, password, card</h2>
+        <p>
+          When a receiver connects, the sender first announces only what kind
+          of share is waiting — not its contents:
+        </p>
+        <pre class="code-block">{`{ "type": "data-offer", "kind": "wifi" }`}</pre>
+        <p>
+          The receiver answers with <code>data-accept</code> (after a PIN
+          check, if the sender asked for one), and only then does the sender
+          release the actual payload in a single message. The data is small
+          and inline, so it doesn't need chunking:
+        </p>
+        <pre class="code-block">{`{ "type": "data-payload", "data": {
+    "kind": "wifi",
+    "ssid": "...",
+    "password": "...",
+    "security": "WPA",
+    "hidden": false
+} }`}</pre>
+        <p>
+          Because nothing connects until someone taps <em>Receive</em>, link
+          previews, URL scanners in chat and email tools, or a tab opened by
+          accident can't consume a single-use share before the intended person
+          sees it.
+        </p>
+        <p>
+          The receiver renders it appropriately — a scannable Wi-Fi QR code, a
+          labeled credentials card, a card-shaped credit-card preview. The
+          sender flips the session to "delivered" as soon as the payload is
+          sent, writes a localStorage marker so anyone who later opens the
+          same <code>/r#code</code> link sees "this share has already been
+          used," and closes the connection. That later visitor learns only
+          the kind of share — never the SSID, username or last card digits.
+        </p>
+        <p>The sender side has its own guards:</p>
+        <ul>
+          <li>
+            <strong>Optional PIN.</strong> When composing, the sender can set
+            a 4-digit PIN, to pass on another way — out loud or in a call. The
+            share link then ends in <code>.p</code>, so the receive page asks
+            for the PIN together with the Receive tap. The receiver sends it
+            as <code>pin-check</code> right after connecting; a wrong PIN
+            disconnects immediately, so nobody holds the room while guessing.
+            The sender verifies it and only then honors the accept. Three
+            wrong attempts, from any device, cancel the share. Protects
+            against forwarded links and other people reading the same chat.
+          </li>
+          <li>
+            <strong>Who has it open.</strong> The receiver reports a rough
+            device label ("iPhone · Safari"), so the sender can see where the
+            share is about to go. It's self-reported, so it's a hint, not proof.
+          </li>
+          <li>
+            <strong>Cancel and expiry.</strong> The sender can cancel a share at
+            any time, and an unopened share cancels itself after 15 minutes.
+          </li>
+        </ul>
+        <p>
+          A connected receiver that sits on a file's Accept prompt for two
+          minutes disconnects on its own. A room holds one sender and one
+          receiver, so a forgotten tab would otherwise lock the intended
+          receiver out.
+        </p>
+        <p>The receiver-side card has three security guards:</p>
+        <ul>
+          <li>
+            <strong>Reveal with countdown.</strong> Sensitive fields (password,
+            card number, CVC) are dotted by default. Tap <em>Reveal</em> and
+            they're shown for five seconds, then hidden again. Stops the
+            over-the-shoulder leak when you put your phone down.
+          </li>
+          <li>
+            <strong>Auto-discard after five minutes.</strong> Even if you never
+            interact, the snippet vanishes from the page after five minutes
+            total. The card flips to "Discarded" and Reveal/Copy stop working.
+          </li>
+          <li>
+            <strong>Manual discard.</strong> A <em>Discard now</em> link wipes
+            immediately.
+          </li>
+        </ul>
+        <p>
+          For passwords specifically, there's also a "Save to password manager"
+          button that calls the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API" rel="noopener">Credential Management API</a>,
+          triggering the browser's native save-credential prompt. Browser
+          extensions (1Password, Bitwarden) intercept that prompt and let you
+          save into your real vault with the right URL. Available where the API
+          is supported (Chromium-based browsers); silently hidden where it's
+          not.
+        </p>
+
+        <h2>End-to-end encryption</h2>
+        <p>
+          Every byte that flows over a steekem DataChannel is encrypted by
+          <a href="https://datatracker.ietf.org/doc/html/rfc6347" rel="noopener">DTLS</a>
+          — the same protocol your browser uses for the audio and video in a
+          video call. The handshake happens between your two browsers, and the
+          keys are unique to each connection and discarded when the channel
+          closes.
+        </p>
+        <p>
+          DTLS alone has a known weak spot, and we'd rather name it than hide
+          it: the handshake is relayed by our signaling worker. A hostile
+          worker could swap in its own certificates and sit in the middle.
+          That's why the share link carries a second secret after the code:
+        </p>
+        <pre class="code-block">{`https://steekem.com/r#abc123.Gk3pQ9vXz2mN8rTbW5yLhA`}</pre>
+        <p>
+          Everything after <code>#</code> is the URL fragment, which browsers
+          never send to any server. Both browsers derive an AES-256-GCM key
+          from that secret (HKDF, with the room code as salt) and encrypt every
+          message on the channel with it, on top of DTLS. Whatever the worker
+          does to the handshake, it only ever sees ciphertext. The secret is
+          generated fresh for each share and lives in the sender's tab only.
+        </p>
+        <p>
+          A receiver who <em>types</em> the code instead of opening the link
+          doesn't have that secret, so there the channel is DTLS only. To close
+          the gap, both screens show the same four words, derived from the
+          certificate fingerprints on each side. The sender compares them with
+          the receiver before releasing anything; a browser sitting in the
+          middle would produce different words on the two screens.
+        </p>
+        <p>
+          We have no way to decrypt anything you send. The link secret never
+          reaches us, and the words make a silent middleman visible.
+        </p>
+
+        <h2>Open source</h2>
+        <p>
+          Everything above is checkable. The web app, the signaling worker and
+          the WebRTC engine with its encryption live in one repository under
+          the AGPL-3.0 license:
+          <a href="https://github.com/JanJetze/steekem" rel="noopener">github.com/JanJetze/steekem</a>.
+          Bug reports and pull requests are welcome.
+        </p>
+
+        <h2>Which build you are running</h2>
+        <p>
+          Open code only proves what the code does, not that this site serves
+          it. You still have to trust the server that hands you the
+          JavaScript; that is true of every browser-based tool, and we would
+          rather say it than pretend otherwise. What we can do is make the
+          chain visible:
+        </p>
+        <ul>
+          <li>
+            Deploys happen only from GitHub Actions, never from a laptop. The
+            workflow runs are public, so anyone can see which commit was built
+            and where it went.
+          </li>
+          <li>
+            Every build is stamped with its commit. This page was built from
+            {buildCommitUrl
+              ? <a href={buildCommitUrl} rel="noopener"><code>{buildShort}</code></a>
+              : <code>{buildShort}</code>}{buildRunUrl && <> by <a href={buildRunUrl} rel="noopener">this run</a></>}.
+            The same information is at <a href="/version.json"><code>/version.json</code></a>.
+          </li>
+          <li>
+            The bundle you downloaded is what runs. Your browser's developer
+            tools show every request this page makes; there should be none to
+            any host but this one and, once you share something, the signaling
+            worker.
+          </li>
+        </ul>
+
+        <h2>What we don't see, log, or store</h2>
+        <ul>
+          <li>
+            What you send. There's no point in our code that reads it.
+          </li>
+          <li>
+            Who you are. No accounts, no IPs stored, no fingerprinting, no
+            analytics on what you share.
+          </li>
+          <li>
+            Session metadata. The Durable Object holds room state in memory
+            only; it dies when both clients leave.
+          </li>
+          <li>
+            A copy of your data on a server. There's no "deleted after 24
+            hours" — nothing was uploaded in the first place.
+          </li>
+          <li>
+            The room code, once you're done with it. It's only kept for as
+            long as the WebSocket connections are open.
+          </li>
+        </ul>
+        <p>
+          One thing does live somewhere: in your own browser. The sender keeps
+          a localStorage marker (<code>steekem-room-&lt;code&gt;</code>) so a
+          refreshed tab can still show what you sent and confirm it went
+          through. It never leaves your machine, and it ages out after seven
+          days.
+        </p>
+
+        <h2>What's still rough</h2>
+        <ul>
+          <li>
+            <strong>Both tabs need to stay open during a transfer.</strong>
+            Close either side and it breaks. WebRTC has no way to resume across
+            a closed connection.
+          </li>
+          <li>
+            <strong>Two peers per room.</strong> No broadcast to multiple
+            receivers in the same session.
+          </li>
+        </ul>
+      </article>
+
+      <p class="footnote">
+        <a href="/about">About</a> · <a href="/how-it-works">How it works</a> · <a href="/terms">Terms</a> · build <a href="/version.json"><code>{buildShort}</code></a>
+      </p>
+    </div>
+  </body>
+</html>

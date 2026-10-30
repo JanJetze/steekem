@@ -1,0 +1,46 @@
+---
+// Three-state theme toggle: system → light → dark → system.
+// Click cycles. State persisted in localStorage as 'theme'.
+// The pre-paint script in BrandHead applies the stored value to
+// document.documentElement before render so there's no flash.
+---
+<button class="theme-toggle" type="button" aria-label="Cycle theme">
+  <svg class="theme-icon-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="2" y="3" width="20" height="14" rx="2" />
+    <path d="M8 21h8M12 17v4" />
+  </svg>
+  <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+  </svg>
+  <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+</button>
+<script is:inline>
+  (function() {
+    var btn = document.currentScript.previousElementSibling;
+    if (!btn || !btn.classList.contains('theme-toggle')) return;
+    function update() {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (_) {}
+      btn.dataset.theme = (t === 'light' || t === 'dark') ? t : 'system';
+    }
+    btn.addEventListener('click', function() {
+      var current = null;
+      try { current = localStorage.getItem('theme'); } catch (_) {}
+      var next = current === null ? 'light' : current === 'light' ? 'dark' : null;
+      try {
+        if (next === null) {
+          localStorage.removeItem('theme');
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          localStorage.setItem('theme', next);
+          document.documentElement.setAttribute('data-theme', next);
+        }
+      } catch (_) {}
+      update();
+    });
+    update();
+  })();
+</script>

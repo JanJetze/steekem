@@ -1,0 +1,54 @@
+---
+import "../../styles/global.css";
+
+const directions = [
+  {
+    slug: "quiet-room",
+    title: "Quiet Room",
+    vibe: "Linear-meets-Signal — dark, calm, technically-confident",
+  },
+  {
+    slug: "paper-ink",
+    title: "Paper & Ink",
+    vibe: "Tresorit-meets-WeTransfer — warm editorial restraint",
+  },
+  {
+    slug: "whisper",
+    title: "Whisper",
+    vibe: "Signal-meets-Wormhole — ultra-minimal, mono, terminal-like",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>steekem — design previews</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="brand">
+        <h1>steekem</h1>
+        <p class="tagline">design previews</p>
+      </header>
+      <p style="color: var(--text-muted); margin-top: 0;">
+        Three directions for the redesign. Each shows the sender share screen in
+        its own aesthetic — open in separate tabs to compare.
+      </p>
+      <div class="card" style="margin-top: 24px;">
+        <h2 class="card-title">Directions</h2>
+        <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 12px;">
+          {directions.map((d) => (
+            <li>
+              <a href={`/preview/${d.slug}`} style="font-weight: 500;">{d.title}</a>
+              <div style="color: var(--text-muted); font-size: 0.875rem;">{d.vibe}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

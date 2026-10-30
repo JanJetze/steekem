@@ -1,0 +1,46 @@
+---
+// Static "QR-looking" SVG for previews — has the three corner finders and a
+// deterministic noise-pattern in the data area. Not actually scannable; we
+// generate real QRs via the `qrcode` lib in the live app.
+
+const cells: Array<{ x: number; y: number }> = [];
+for (let y = 0; y < 21; y++) {
+  for (let x = 0; x < 21; x++) {
+    const inTopLeft = x < 8 && y < 8;
+    const inTopRight = x >= 13 && y < 8;
+    const inBottomLeft = x < 8 && y >= 13;
+    if (inTopLeft || inTopRight || inBottomLeft) continue;
+    // deterministic noise that looks plausibly QR-shaped
+    const on = (x * 13 + y * 7 + x * y) % 5 < 2;
+    if (on) cells.push({ x, y });
+  }
+}
+
+interface Props {
+  fg?: string;
+  bg?: string;
+  size?: string;
+}
+const { fg = "currentColor", bg = "transparent", size = "100%" } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 21 21"
+  xmlns="http://www.w3.org/2000/svg"
+  shape-rendering="crispEdges"
+  style={`width: ${size}; height: ${size}; display: block;`}
+>
+  <rect width="21" height="21" fill={bg} />
+  <rect x="0" y="0" width="7" height="7" fill={fg} />
+  <rect x="1" y="1" width="5" height="5" fill={bg} />
+  <rect x="2" y="2" width="3" height="3" fill={fg} />
+  <rect x="14" y="0" width="7" height="7" fill={fg} />
+  <rect x="15" y="1" width="5" height="5" fill={bg} />
+  <rect x="16" y="2" width="3" height="3" fill={fg} />
+  <rect x="0" y="14" width="7" height="7" fill={fg} />
+  <rect x="1" y="15" width="5" height="5" fill={bg} />
+  <rect x="2" y="16" width="3" height="3" fill={fg} />
+  {cells.map((c) => (
+    <rect x={c.x} y={c.y} width="1" height="1" fill={fg} />
+  ))}
+</svg>

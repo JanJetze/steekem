@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 2947 2947"
+     role="img" aria-label="steekem favicon">
+  <defs>
+    <clipPath id="paper-clip-fav">
+      <path d="M 180 60 L 2202 60 Q 2322 60 2407 145 L 2802 540 Q 2887 625 2887 745 L 2887 2767 Q 2887 2887 2767 2887 L 180 2887 Q 60 2887 60 2767 L 60 180 Q 60 60 180 60 Z"/>
+    </clipPath>
+    <filter id="fold-shadow-fav" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="50" stdDeviation="80" flood-color="#000" flood-opacity="0.40"/>
+    </filter>
+  </defs>
+  <!-- Paper, page-bg coloured. All corners gently rounded — including the two fold ends. -->
+  <path d="M 180 60 L 2202 60 Q 2322 60 2407 145 L 2802 540 Q 2887 625 2887 745 L 2887 2767 Q 2887 2887 2767 2887 L 180 2887 Q 60 2887 60 2767 L 60 180 Q 60 60 180 60 Z"
+        fill="#0E0E10" stroke="#2A2A2F" stroke-width="35"/>
+  <!-- Folded corner — back of paper revealing the brand orange. Clipped to paper, with shadow + crease. -->
+  <g clip-path="url(#paper-clip-fav)">
+    <path d="M 2322 60 L 2887 625 L 2442 625 Q 2322 625 2322 505 Z"
+          fill="#E8923C" filter="url(#fold-shadow-fav)"/>
+  </g>
+  <!-- The "ee" mark printed on the paper -->
+  <g transform="translate(0, 2032) scale(1, -1)">
+    <g transform="translate(294, 0)" fill="#E8923C"><path d="M636 -21Q461 -21 334.0 48.5Q207 118 139.5 247.0Q72 376 72 555Q72 727 139.5 857.0Q207 987 331.0 1059.5Q455 1132 623 1132Q741 1132 839.5 1095.0Q938 1058 1010.5 985.5Q1083 913 1122.5 807.0Q1162 701 1162 562V474H196V677H996L833 629Q833 707 809.5 763.0Q786 819 740.0 849.0Q694 879 626 879Q558 879 511.0 848.5Q464 818 439.5 763.5Q415 709 415 636V490Q415 404 443.5 346.5Q472 289 523.0 260.5Q574 232 642 232Q689 232 727.5 245.0Q766 258 793.5 284.0Q821 310 835 347L1146 296Q1118 200 1049.5 128.5Q981 57 876.5 18.0Q772 -21 636 -21Z"/></g>
+    <g transform="translate(1422, 0)" fill="#E8923C"><path d="M636 -21Q461 -21 334.0 48.5Q207 118 139.5 247.0Q72 376 72 555Q72 727 139.5 857.0Q207 987 331.0 1059.5Q455 1132 623 1132Q741 1132 839.5 1095.0Q938 1058 1010.5 985.5Q1083 913 1122.5 807.0Q1162 701 1162 562V474H196V677H996L833 629Q833 707 809.5 763.0Q786 819 740.0 849.0Q694 879 626 879Q558 879 511.0 848.5Q464 818 439.5 763.5Q415 709 415 636V490Q415 404 443.5 346.5Q472 289 523.0 260.5Q574 232 642 232Q689 232 727.5 245.0Q766 258 793.5 284.0Q821 310 835 347L1146 296Q1118 200 1049.5 128.5Q981 57 876.5 18.0Q772 -21 636 -21Z"/></g>
+  </g>
+</svg>

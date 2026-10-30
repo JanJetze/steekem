@@ -1,0 +1,74 @@
+---
+import "../styles/global.css";
+import BrandHead from "../components/BrandHead.astro";
+import BrandLogo from "../components/BrandLogo.astro";
+
+const url = Astro.url;
+const title = "steekem — single-use, end-to-end encrypted sharing";
+const description = "Send a text snippet, password, Wi-Fi credentials, or card details directly browser-to-browser. End-to-end encrypted, single-use links.";
+const canonical = `${url.origin}/`;
+const ogImage = `${url.origin}/og.png`;
+
+const tools = [
+  { href: "/text", label: "Send text", blurb: "Passwords, SSH keys, snippets — single-use." },
+  { href: "/wifi", label: "Share Wi-Fi", blurb: "QR your guests scan to join. One tap." },
+  { href: "/password", label: "Send a login", blurb: "Username + password with copy-per-field." },
+  { href: "/card", label: "Send a card", blurb: "Card details with copy-per-field. For family, not merchants." },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <BrandHead />
+  </head>
+  <body>
+    <div class="shell">
+      <BrandLogo />
+
+      <p style="text-align: center; color: var(--text-muted); margin: 24px 0 32px;">
+        Like passing a note across the classroom.
+      </p>
+
+      <ul class="tool-list">
+        {tools.map((t) => (
+          <li>
+            <a href={t.href}>
+              <strong>{t.label}</strong>
+              <span>{t.blurb}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="or-divider">or</div>
+
+      <ul class="tool-list">
+        <li>
+          <a href="/r">
+            <strong>Receive a transfer</strong>
+            <span>Got a 6-character code? Paste it here.</span>
+          </a>
+        </li>
+      </ul>
+
+      <p class="footnote">
+        <a href="/about">About</a> · <a href="/how-it-works">How it works</a> · <a href="/terms">Terms</a>
+      </p>
+    </div>
+  </body>
+</html>

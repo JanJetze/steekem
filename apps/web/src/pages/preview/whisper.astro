@@ -1,0 +1,221 @@
+---
+import FakeQr from "../../components/FakeQr.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>steekem — Preview: Whisper</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --bg: #000000;
+        --surface: #0a0a0a;
+        --border: #1f1f1f;
+        --text: #f2f2f2;
+        --muted: #8a8a8a;
+        --faint: #4a4a4a;
+        --connected: #3fcf8e;
+        --sans: "Geist", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+        --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: var(--sans);
+        font-size: 14px;
+        line-height: 1.5;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .topnav {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        font-size: 0.75rem;
+        color: var(--faint);
+      }
+      .topnav a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .topnav a:hover { color: var(--text); }
+
+      .shell {
+        max-width: 380px;
+        margin: 0 auto;
+        padding: 96px 24px 64px;
+      }
+
+      .brand {
+        text-align: center;
+        margin-bottom: 64px;
+      }
+      .brand .name {
+        font-size: 1.125rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .brand .tagline {
+        font-size: 0.75rem;
+        color: var(--faint);
+        margin-top: 4px;
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 56px;
+      }
+      .status .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--muted);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+      }
+
+      .file-line {
+        text-align: center;
+        margin-bottom: 56px;
+      }
+      .file-line .name {
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .file-line .size {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--faint);
+        margin-top: 4px;
+      }
+
+      .qr-block {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 56px;
+      }
+      .qr {
+        width: 200px;
+        height: 200px;
+        color: var(--text);
+      }
+
+      .code-section {
+        text-align: center;
+        margin-bottom: 56px;
+      }
+      .code {
+        font-family: var(--mono);
+        font-size: 3.5rem;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        color: var(--text);
+        line-height: 1;
+      }
+      .code-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--faint);
+        margin-top: 12px;
+      }
+
+      .url-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+      }
+      .url-input {
+        flex: 1;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        background: transparent;
+        color: var(--muted);
+        border: 0;
+        padding: 0;
+      }
+      .url-input:focus { outline: none; color: var(--text); }
+      .copy-btn {
+        font: inherit;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        background: transparent;
+        color: var(--muted);
+        border: 0;
+        cursor: pointer;
+        padding: 0;
+      }
+      .copy-btn:hover { color: var(--text); }
+
+      .footnote {
+        text-align: center;
+        font-size: 0.7rem;
+        color: var(--faint);
+        margin-top: 64px;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topnav">
+      <a href="/preview">← all previews</a> · whisper
+    </div>
+
+    <div class="shell">
+      <div class="brand">
+        <div class="name">steekem</div>
+        <div class="tagline">transfer in silence</div>
+      </div>
+
+      <div class="status">
+        <span class="dot"></span>
+        listening
+      </div>
+
+      <div class="file-line">
+        <div class="name">vakantiefotos-2026.zip</div>
+        <div class="size">847.3 MB</div>
+      </div>
+
+      <div class="qr-block">
+        <div class="qr">
+          <FakeQr fg="#f2f2f2" bg="#000000" />
+        </div>
+      </div>
+
+      <div class="code-section">
+        <div class="code">k4mn7r</div>
+        <div class="code-label">code</div>
+      </div>
+
+      <div class="url-row">
+        <input type="text" class="url-input" value="steekem-web.pages.dev/send#k4mn7r" readonly />
+        <button class="copy-btn">copy</button>
+      </div>
+
+      <p class="footnote">end-to-end · peer-to-peer · no server</p>
+    </div>
+  </body>
+</html>

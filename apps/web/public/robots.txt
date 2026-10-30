@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /preview/
+
+Sitemap: https://steekem.com/sitemap-index.xml

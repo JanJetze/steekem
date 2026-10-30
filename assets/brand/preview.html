@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>steekem brand assets — production preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 0; background: #888; }
+    .panel { padding: 60px 80px; min-height: 100vh; }
+    .panel-dark { background: #0E0E10; color: #F5F1E8; }
+    .panel-light { background: #F5F1E8; color: #0E0E10; }
+    .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      font-weight: 600; opacity: 0.55; margin: 0 0 12px;
+    }
+    h2 { font-size: 14px; font-weight: 600; margin: 0 0 24px; opacity: 0.65; text-transform: uppercase; letter-spacing: 0.08em; }
+    section { margin-bottom: 60px; }
+    .row { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+    .stack { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .stack span { font-size: 10px; opacity: 0.5; }
+    .browser-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; font-size: 12px; }
+    .panel-dark .browser-tab { background: #1F1F22; color: #E5E5E5; }
+    .panel-light .browser-tab { background: #FFFFFF; color: #1A1A1A; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    img { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="panel panel-dark">
+    <p class="label">Dark mode · production SVGs</p>
+
+    <section>
+      <h2>Wordmark — wordmark-dark.svg</h2>
+      <div class="row">
+        <img src="wordmark-dark.svg" height="120"/>
+      </div>
+      <div class="row" style="margin-top: 32px;">
+        <img src="wordmark-dark.svg" height="48"/>
+        <img src="wordmark-dark.svg" height="24"/>
+      </div>
+    </section>
+
+    <section>
+      <h2>Favicon — favicon-dark.svg</h2>
+      <div class="row">
+        <div class="stack"><img src="favicon-dark.svg" width="128" height="128"/><span>128px</span></div>
+        <div class="stack"><img src="favicon-dark.svg" width="64" height="64"/><span>64px</span></div>
+        <div class="stack"><img src="favicon-dark.svg" width="32" height="32"/><span>32px</span></div>
+        <div class="stack"><img src="favicon-dark.svg" width="16" height="16"/><span>16px</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>In context — browser tab</h2>
+      <div class="browser-tab">
+        <img src="favicon-dark.svg" width="16" height="16"/>
+        <span>steekem — share secrets, just between us</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="panel panel-light">
+    <p class="label">Light mode · production SVGs</p>
+
+    <section>
+      <h2>Wordmark — wordmark-light.svg</h2>
+      <div class="row">
+        <img src="wordmark-light.svg" height="120"/>
+      </div>
+      <div class="row" style="margin-top: 32px;">
+        <img src="wordmark-light.svg" height="48"/>
+        <img src="wordmark-light.svg" height="24"/>
+      </div>
+    </section>
+
+    <section>
+      <h2>Favicon — favicon-light.svg</h2>
+      <div class="row">
+        <div class="stack"><img src="favicon-light.svg" width="128" height="128"/><span>128px</span></div>
+        <div class="stack"><img src="favicon-light.svg" width="64" height="64"/><span>64px</span></div>
+        <div class="stack"><img src="favicon-light.svg" width="32" height="32"/><span>32px</span></div>
+        <div class="stack"><img src="favicon-light.svg" width="16" height="16"/><span>16px</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>In context — browser tab</h2>
+      <div class="browser-tab">
+        <img src="favicon-light.svg" width="16" height="16"/>
+        <span>steekem — share secrets, just between us</span>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>

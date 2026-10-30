@@ -1,0 +1,262 @@
+---
+import FakeQr from "../../components/FakeQr.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>steekem — Preview: Paper & Ink</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --paper: #f5f2ec;
+        --paper-dark: #ece8df;
+        --surface: #ffffff;
+        --border: #e2dcd0;
+        --border-soft: #efeae0;
+        --ink: #161412;
+        --ink-soft: #4a4641;
+        --ink-faint: #8a8478;
+        --ember: #c8412b;
+        --serif: "Instrument Serif", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+        --sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.5;
+        background: var(--paper);
+        color: var(--ink);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .topnav {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 32px 0;
+        font-size: 0.8rem;
+        color: var(--ink-faint);
+      }
+      .topnav a { color: var(--ink-soft); text-decoration: none; }
+      .topnav a:hover { color: var(--ink); }
+
+      .layout {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 48px 32px 64px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        align-items: start;
+      }
+      @media (min-width: 760px) {
+        .layout {
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          padding: 80px 48px;
+        }
+      }
+
+      .left .wordmark {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 4.5rem;
+        line-height: 1;
+        font-weight: 400;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+      .left .tagline {
+        font-family: var(--serif);
+        font-size: 1.5rem;
+        font-style: italic;
+        color: var(--ink-soft);
+        margin: 8px 0 32px;
+      }
+      .left .blurb {
+        max-width: 320px;
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+        margin: 0 0 24px;
+      }
+      .left .privacy-note {
+        font-size: 0.8rem;
+        color: var(--ink-faint);
+        border-top: 1px solid var(--border-soft);
+        padding-top: 16px;
+        max-width: 320px;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 4px;
+        padding: 32px;
+        box-shadow:
+          0 1px 0 var(--border-soft),
+          0 8px 32px -8px rgba(22, 20, 18, 0.06),
+          0 24px 64px -16px rgba(22, 20, 18, 0.06);
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--ink-faint);
+        margin-bottom: 20px;
+      }
+      .status .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--ember);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+      }
+
+      .file-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-top: 1px solid var(--border-soft);
+        border-bottom: 1px solid var(--border-soft);
+        margin-bottom: 28px;
+      }
+      .file-row .name {
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 70%;
+      }
+      .file-row .size {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--ink-faint);
+      }
+
+      .qr-block {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 28px;
+      }
+      .qr {
+        width: 160px;
+        height: 160px;
+        background: var(--paper);
+        padding: 12px;
+        border: 1px solid var(--border);
+        color: var(--ink);
+      }
+
+      .label {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 1rem;
+        color: var(--ink-faint);
+        margin-bottom: 6px;
+      }
+
+      .code-section { text-align: center; margin-bottom: 28px; }
+      .code {
+        font-family: var(--mono);
+        font-size: 1.875rem;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        color: var(--ink);
+      }
+
+      .url-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .url-input {
+        flex: 1;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        background: var(--paper);
+        color: var(--ink-soft);
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+      }
+      .copy-btn {
+        font: inherit;
+        font-size: 0.85rem;
+        background: var(--ink);
+        color: var(--paper);
+        border: 1px solid var(--ink);
+        padding: 0 18px;
+        cursor: pointer;
+      }
+      .copy-btn:hover { background: var(--ink-soft); }
+    </style>
+  </head>
+  <body>
+    <div class="topnav">
+      <a href="/preview">← all previews</a> · Paper &amp; Ink
+    </div>
+
+    <div class="layout">
+      <div class="left">
+        <h1 class="wordmark">steekem.</h1>
+        <p class="tagline">transfer in silence</p>
+        <p class="blurb">
+          A direct line between two browsers. No cloud, no upload, no third party in the
+          middle. The file leaves only when the recipient agrees to receive it.
+        </p>
+        <p class="privacy-note">
+          End-to-end encrypted via WebRTC. The session disappears when this tab closes.
+        </p>
+      </div>
+
+      <div class="right">
+        <div class="card">
+          <div class="status">
+            <span class="dot"></span>
+            holding the line
+          </div>
+
+          <div class="file-row">
+            <span class="name">vakantiefotos-2026.zip</span>
+            <span class="size">847.3 MB</span>
+          </div>
+
+          <div class="qr-block">
+            <div class="qr">
+              <FakeQr fg="#161412" bg="#f5f2ec" />
+            </div>
+          </div>
+
+          <div class="code-section">
+            <div class="label">code</div>
+            <div class="code">k4mn7r</div>
+          </div>
+
+          <div>
+            <div class="label">or share the link</div>
+            <div class="url-row">
+              <input type="text" class="url-input" value="steekem-web.pages.dev/send#k4mn7r" readonly />
+              <button class="copy-btn">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

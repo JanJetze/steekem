@@ -1,0 +1,23 @@
+services:
+  dev:
+    image: node:22-slim  # glibc: workerd (Cloudflare) does not run on Alpine/musl
+    working_dir: /workspace
+    command: sh -c "corepack enable && corepack prepare pnpm@9.12.0 --activate && pnpm install && pnpm dev"
+    volumes:
+      - .:/workspace
+      - silnt_node_modules:/workspace/node_modules
+      - pnpm_store:/root/.local/share/pnpm
+      # Bind-mount host wrangler creds (set by `wrangler login` on the Mac).
+      # macOS path: ~/Library/Preferences/.wrangler — Linux/wrangler reads
+      # from $XDG_CONFIG_HOME/.wrangler which for root in the container is
+      # /root/.config/.wrangler. Same default.toml, different path conventions.
+      - ${HOME}/Library/Preferences/.wrangler:/root/.config/.wrangler
+    ports:
+      - "4322:4321"  # Astro (host 4322 → container 4321; 4321 stays free for other projects)
+      - "8787:8787"  # Wrangler
+    tty: true
+    stdin_open: true
+
+volumes:
+  silnt_node_modules:
+  pnpm_store:

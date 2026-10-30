@@ -1,0 +1,44 @@
+---
+import ReceiverApp from "../islands/ReceiverApp.tsx";
+import BrandHead from "../components/BrandHead.astro";
+import BrandLogo from "../components/BrandLogo.astro";
+import "../styles/global.css";
+
+const url = Astro.url;
+const wsProtocol = url.protocol === "https:" ? "wss:" : "ws:";
+const signalingUrl =
+  import.meta.env.PUBLIC_SIGNALING_URL ?? `${wsProtocol}//${url.hostname}:8787`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Receive — steekem</title>
+    <meta
+      name="description"
+      content="Receive a snippet directly from the sender's browser. End-to-end encrypted, never stored on a server."
+    />
+    <link rel="canonical" href={`${Astro.url.origin}/r`} />
+    <script is:inline>
+      // SW registration as early as possible.
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      }
+    </script>
+    <BrandHead />
+  </head>
+  <body>
+    <div class="shell">
+      <BrandLogo href="/" tagline="incoming" />
+      <ReceiverApp client:only="preact" signalingUrl={signalingUrl} />
+      <p class="footnote">
+        End-to-end encrypted. Receiving directly from the sender's browser.
+      </p>
+      <p class="footnote-nav">
+        <a href="/about">About</a> · <a href="/how-it-works">How it works</a> · <a href="/terms">Terms</a>
+      </p>
+    </div>
+  </body>
+</html>

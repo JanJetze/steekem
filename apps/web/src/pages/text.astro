@@ -1,0 +1,51 @@
+---
+import SendApp from "../islands/SendApp.tsx";
+import ModeToggle from "../components/ModeToggle.astro";
+import BrandHead from "../components/BrandHead.astro";
+import BrandLogo from "../components/BrandLogo.astro";
+import "../styles/global.css";
+
+const url = Astro.url;
+const wsProtocol = url.protocol === "https:" ? "wss:" : "ws:";
+const signalingUrl =
+  import.meta.env.PUBLIC_SIGNALING_URL ?? `${wsProtocol}//${url.hostname}:8787`;
+
+const title = "Send a password or text snippet — steekem";
+const description = "Share a password, SSH key, config snippet, or any short text. Single-use link, browser-to-browser, never on a server.";
+const canonical = `${url.origin}/text`;
+const ogImage = `${url.origin}/og.png`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <BrandHead />
+  </head>
+  <body>
+    <div class="shell">
+      <BrandLogo href="/" />
+      <ModeToggle current="text" />
+      <SendApp client:only="preact" signalingUrl={signalingUrl} mode="text" />
+      <p class="footnote">
+        End-to-end encrypted.
+      </p>
+      <p class="footnote-nav">
+        <a href="/about">About</a> · <a href="/how-it-works">How it works</a> · <a href="/terms">Terms</a>
+      </p>
+    </div>
+  </body>
+</html>

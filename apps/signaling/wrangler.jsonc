@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "steekem-signaling",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-01",
+  "durable_objects": {
+    "bindings": [
+      { "name": "ROOM", "class_name": "Room" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Room"] }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "env": {
+    "dev": {
+      "name": "steekem-signaling-dev",
+      "durable_objects": {
+        "bindings": [
+          { "name": "ROOM", "class_name": "Room" }
+        ]
+      },
+      "migrations": [
+        { "tag": "v1", "new_sqlite_classes": ["Room"] }
+      ]
+    }
+  }
+}
